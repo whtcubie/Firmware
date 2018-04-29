@@ -35,6 +35,7 @@ set(config_module_list
 	systemcmds/ver
 	systemcmds/hardfault_log
 	systemcmds/topic_listener
+	systemcmds/sd_bench
 
 	#
 	# General system control
