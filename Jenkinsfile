@@ -243,6 +243,26 @@ pipeline {
           }
         }
 
+        stage('tests (address sanitizer)') {
+          agent {
+            docker {
+              image 'px4io/px4-dev-base:2018-03-30'
+              args '-e CCACHE_BASEDIR=$WORKSPACE -v ${CCACHE_DIR}:${CCACHE_DIR}:rw'
+            }
+          }
+          environment {
+              PX4_ASAN = 1
+              ASAN_OPTIONS = "color=always:check_initialization_order=1:detect_stack_use_after_return=1"
+          }
+          steps {
+            sh 'export'
+            sh 'make distclean'
+            sh 'make posix_sitl_default test_results_junit'
+            junit 'build/posix_sitl_default/JUnitTestResults.xml'
+            sh 'make distclean'
+          }
+        }
+
         stage('check stack') {
           agent {
             docker {
