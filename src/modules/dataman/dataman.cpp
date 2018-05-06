@@ -227,7 +227,7 @@ static const unsigned g_per_item_max_index[DM_KEY_NUM_KEYS] = {
 #define DM_SECTOR_HDR_SIZE 4	/* data manager per item header overhead */
 
 /* Table of the len of each item type */
-static const unsigned g_per_item_size[DM_KEY_NUM_KEYS] = {
+static constexpr size_t g_per_item_size[DM_KEY_NUM_KEYS] = {
 	sizeof(struct mission_save_point_s) + DM_SECTOR_HDR_SIZE,
 	sizeof(struct mission_fence_point_s) + DM_SECTOR_HDR_SIZE,
 	sizeof(struct mission_item_s) + DM_SECTOR_HDR_SIZE,
@@ -236,6 +236,8 @@ static const unsigned g_per_item_size[DM_KEY_NUM_KEYS] = {
 	sizeof(struct mission_s) + DM_SECTOR_HDR_SIZE,
 	sizeof(struct dataman_compat_s) + DM_SECTOR_HDR_SIZE
 };
+
+static constexpr size_t max_per_item_size = g_per_item_size[3]; // mission_item_s is by far the largest
 
 /* Table of offset for index 0 of each item type */
 static unsigned int g_key_offsets[DM_KEY_NUM_KEYS];
@@ -612,7 +614,7 @@ static ssize_t _ram_read(dm_item_t item, unsigned index, void *buf, size_t count
 static ssize_t
 _file_read(dm_item_t item, unsigned index, void *buf, size_t count)
 {
-	unsigned char buffer[g_per_item_size[item]];
+	uint8_t buffer[max_per_item_size];
 	int len, offset;
 
 	/* Get the offset for this item */
