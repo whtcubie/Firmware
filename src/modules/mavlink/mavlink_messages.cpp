@@ -911,7 +911,7 @@ protected:
 			mavlink_attitude_t msg = {};
 			msg.time_boot_ms = att.timestamp / 1000;
 
-			if (!(status.is_vtol && status.is_vtol_tailsitter && !status.is_rotary_wing)) { 
+			if (!(status.is_vtol && status.is_vtol_tailsitter && !status.is_rotary_wing)) {
 				// Normal attitude
 				matrix::Eulerf euler = matrix::Quatf(att.q);
 				msg.roll = euler.phi();
@@ -920,6 +920,7 @@ protected:
 				msg.rollspeed = att.rollspeed;
 				msg.pitchspeed = att.pitchspeed;
 				msg.yawspeed = att.yawspeed;
+
 			} else {
 				// Tailsitter VTOL in FW mode: reported attitude is rotated with 90 pitch up
 				matrix::Eulerf euler = matrix::Quatf(att.q) * matrix::Quatf(0.7071f, 0.0f, 0.7071f, 0.0f);
@@ -1001,7 +1002,7 @@ protected:
 			mavlink_attitude_quaternion_t msg = {};
 			msg.time_boot_ms = att.timestamp / 1000;
 
-			if (!(status.is_vtol && status.is_vtol_tailsitter && !status.is_rotary_wing)) { 
+			if (!(status.is_vtol && status.is_vtol_tailsitter && !status.is_rotary_wing)) {
 				// Normal attitude
 				msg.q1 = att.q[0];
 				msg.q2 = att.q[1];
@@ -1010,6 +1011,7 @@ protected:
 				msg.rollspeed = att.rollspeed;
 				msg.pitchspeed = att.pitchspeed;
 				msg.yawspeed = att.yawspeed;
+
 			} else {
 				// Tailsitter VTOL in FW mode: reported attitude is rotated with 90 pitch up
 				matrix::Quatf q_vtol = matrix::Quatf(att.q) * matrix::Quatf(0.7071f, 0.0f, 0.7071f, 0.0f);
