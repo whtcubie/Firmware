@@ -116,7 +116,6 @@ private:
 
 	bool				_task_should_exit;				///< flag to make the main worker task exit
 	int				_serial_fd;					///< serial interface to GPS
-	unsigned			_baudrate;					///< current baudrate
 	char				_port[20];					///< device / serial port path
 	volatile int			_task;						///< worker task
 	bool				_healthy;					///< flag to signal if the GPS is ok
@@ -134,6 +133,7 @@ private:
 	int					_gps_sat_orb_instance;				///< uORB multi-topic instance for satellite info
 	orb_advert_t			_report_sat_info_pub;				///< uORB pub for satellite info
 	float				_rate;						///< position update rate
+	unsigned			_baudrate = 9600;					///< current baudrate
 	float				_rate_rtcm_injection;				///< RTCM message injection rate
 	unsigned			_last_rate_rtcm_injection_count; 		///< counter for number of RTCM messages
 	bool				_fake_gps;					///< fake gps output
@@ -163,7 +163,7 @@ private:
 	/**
 	 * Set the baudrate of the UART to the GPS
 	 */
-	int set_baudrate(unsigned baud);
+	int set_baudrate(unsigned baud = 9600);
 
 	/**
 	 * Send a reset command to the GPS
@@ -534,8 +534,8 @@ int GPS::setBaudrate(unsigned baud)
 	//
 	uart_config.c_lflag &= ~(ECHO | ECHONL | ICANON | IEXTEN | ISIG);
 
-	/* no parity, one stop bit */
-	uart_config.c_cflag &= ~(CSTOPB | PARENB);
+	/* no parity, one stop bit, disable flow control */
+	uart_config.c_cflag &= ~(CSTOPB | PARENB | CRTSCTS);
 
 	/* set baud rate */
 	if ((termios_state = cfsetispeed(&uart_config, speed)) < 0) {
@@ -798,7 +798,7 @@ GPS::task_main()
 				}
 			}
 
-			if (_mode_auto) {
+/*			if (_mode_auto) {
 				switch (_mode) {
 				case GPS_DRIVER_MODE_UBX:
 					_mode = GPS_DRIVER_MODE_MTK;
@@ -819,8 +819,8 @@ GPS::task_main()
 
 			} else {
 				usleep(500000);
-			}
-
+			}  */
+			//usleep(500000);
 		}
 	}
 
@@ -888,9 +888,8 @@ GPS::print_info()
 	PX4_WARN("port: %s, baudrate: %d, status: %s", _port, _baudrate, (_healthy) ? "OK" : "NOT OK");
 	PX4_WARN("sat info: %s, noise: %d, jamming detected: %s",
 		 (_p_report_sat_info != nullptr) ? "enabled" : "disabled",
-		 _report_gps_pos.noise_per_ms,
-		 _report_gps_pos.jamming_indicator == 255 ? "YES" : "NO");
-
+		 _report_gps_pos.noise_per_ms,_report_gps_pos.jamming_indicator == 255 ? "YES" : "NO");
+	_report_gps_pos.timestamp = 1;
 	if (_report_gps_pos.timestamp != 0) {
 		PX4_WARN("position lock: %d, satellites: %d, last update: %8.4fms ago", (int)_report_gps_pos.fix_type,
 			 _report_gps_pos.satellites_used, (double)(hrt_absolute_time() - _report_gps_pos.timestamp) / 1000.0);
@@ -1053,9 +1052,9 @@ gps_main(int argc, char *argv[])
 	const char *device_name = GPS_DEFAULT_UART_PORT;
 	const char *device_name2 = nullptr;
 	bool fake_gps = false;
-	bool enable_sat_info = false;
+	bool enable_sat_info = true;
 	GPSHelper::Interface interface = GPSHelper::Interface::UART;
-	gps_driver_mode_t mode = GPS_DRIVER_MODE_NONE;
+	gps_driver_mode_t mode = GPS_DRIVER_MODE_ASHTECH;
 
 	if (argc < 2) {
 		PX4_ERR("not enough arguments");
@@ -1094,7 +1093,7 @@ gps_main(int argc, char *argv[])
 		}
 
 		/* Detect interface option */
-		for (int i = 2; i < argc; i++) {
+/*		for (int i = 2; i < argc; i++) {
 			if (!strcmp(argv[i], "-i")) {
 
 				int interface_arg = i + 1;
@@ -1116,7 +1115,8 @@ gps_main(int argc, char *argv[])
 		}
 
 		/* Detect mode/protocol option */
-		for (int i = 2; i < argc; i++) {
+		 mode = GPS_DRIVER_MODE_ASHTECH;
+/*		for (int i = 2; i < argc; i++) {
 			if (!strcmp(argv[i], "-p")) {
 
 				int mode_arg = i + 1;
@@ -1139,6 +1139,7 @@ gps_main(int argc, char *argv[])
 				}
 			}
 		}
+*/
 
 		/* Allow to use a second gps device */
 		for (int i = 2; i < argc; i++) {
