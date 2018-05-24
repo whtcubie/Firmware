@@ -565,7 +565,7 @@ PARAM_DEFINE_INT32(EKF2_AID_MASK, 1);
  * @value 3 Vision
  *
  */
-PARAM_DEFINE_INT32(EKF2_HGT_MODE, 0);
+PARAM_DEFINE_INT32(EKF2_HGT_MODE, 2);
 
 /**
  * Measurement noise for range finder fusion
@@ -793,7 +793,7 @@ PARAM_DEFINE_FLOAT(EKF2_RNG_POS_X, 0.0f);
  */
 PARAM_DEFINE_FLOAT(EKF2_RNG_POS_Y, 0.0f);
 
-/**
+/** note-adream-0
  * Z position of range finder origin in body frame
  *
  * @group EKF2
@@ -1018,7 +1018,7 @@ PARAM_DEFINE_FLOAT(EKF2_MAGB_K, 0.2f);
  * @value 0 Range aid disabled
  * @value 1 Range aid enabled
  */
-PARAM_DEFINE_INT32(EKF2_RNG_AID, 0);
+PARAM_DEFINE_INT32(EKF2_RNG_AID, 1);
 
 /**
  * Maximum horizontal velocity allowed for range aid mode.
@@ -1030,7 +1030,7 @@ PARAM_DEFINE_INT32(EKF2_RNG_AID, 0);
  * @min 0.1
  * @max 2
  */
-PARAM_DEFINE_FLOAT(EKF2_RNG_A_VMAX, 1.0f);
+PARAM_DEFINE_FLOAT(EKF2_RNG_A_VMAX, 2.0f);
 
 /**
  * Maximum absolute altitude (height above ground level) allowed for range aid mode.
@@ -1042,4 +1042,4 @@ PARAM_DEFINE_FLOAT(EKF2_RNG_A_VMAX, 1.0f);
  * @min 1.0
  * @max 10.0
  */
-PARAM_DEFINE_FLOAT(EKF2_RNG_A_HMAX, 5.0f);
+PARAM_DEFINE_FLOAT(EKF2_RNG_A_HMAX, 8.0f);
